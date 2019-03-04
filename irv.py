@@ -1,4 +1,13 @@
+from csv import reader as csvreader
 
+
+def colume_seperator(colume_select, colume_names, contents):
+    for content in contents:
+        data = {}
+        for name, value in zip(colume_names, content):
+            if name in colume_select:
+                data[name] = value
+        yield data
 
 def round_tally(votes):
     results = {}
@@ -94,3 +103,12 @@ if __name__ == "__main__":
         [3],
         [2,3],
         [1,2]])[1])
+
+    with open("vote_results.csv", 'r') as f:
+        reader = csvreader(f)
+
+        colume_titles = [title.strip(' ') for title in next(reader)]
+
+        # Candidate names
+        candidate_names = [name.strip('[]') for name in colume_titles if len(name) and name[0] == '[' and name[-1] == ']']
+        print(candidate_names)

@@ -3,12 +3,6 @@ import pytest
 import irv
 
 
-def test_wow():
-    assert True
-
-    print("Hi")
-
-
 def test_is_valid_vote():
 
     """
@@ -109,3 +103,14 @@ def test_election():
         [4]
         ]) == (1, [{1: 4, 2: 1, 3: 1, 4: 1}])
 
+def test_colume_sperator():
+    sep = irv.colume_seperator
+
+    def dummy():
+        yield ["1", "2", "3"]
+        yield ["2", "3", "4"]
+
+    assert [
+            {"a": "1", "b": "2"},
+            {"a": "2", "b": "3"}
+            ] == list(sep(["a", "b"], ["a", "b", "c"], dummy()))
