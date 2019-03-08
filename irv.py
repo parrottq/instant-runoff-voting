@@ -9,6 +9,15 @@ def colume_seperator(colume_select, colume_names, contents):
                 data[name] = value
         yield data
 
+
+def format_ballot(ballot):
+    ballot_cleaned = {key:int(value) for key, value in ballot.items() if value.isdigit()}
+
+    ballot_sorted = sorted(ballot_cleaned.items(), key=lambda e: e[1])
+
+    print(ballot_sorted)
+
+
 def round_tally(votes):
     results = {}
 
@@ -112,3 +121,6 @@ if __name__ == "__main__":
         # Candidate names
         candidate_names = [name.strip('[]') for name in colume_titles if len(name) and name[0] == '[' and name[-1] == ']']
         print(candidate_names)
+
+        for column in colume_seperator([f'[{e}]' for e in candidate_names], colume_titles, reader):
+            print(column)

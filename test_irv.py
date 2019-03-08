@@ -114,3 +114,12 @@ def test_colume_sperator():
             {"a": "1", "b": "2"},
             {"a": "2", "b": "3"}
             ] == list(sep(["a", "b"], ["a", "b", "c"], dummy()))
+
+def test_format_ballot():
+    fballot = irv.format_ballot
+
+    assert fballot({"a": "", "b": "", "c": ""}) == []
+    assert fballot({"a": "1", "b": "2", "c": "3"}) == ["a", "b", "c"]
+    assert fballot({"a": "", "b": "2", "c": "3"}) == ["b", "c"]
+    assert fballot({"a": "letters"}) == []
+    assert fballot({"a": "2", "b": "", "c": "4"}) == ["a", "c"]
