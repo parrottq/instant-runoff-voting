@@ -11,11 +11,14 @@ def colume_seperator(colume_select, colume_names, contents):
 
 
 def format_ballot(ballot):
+    # Remove empty values and none numbers
     ballot_cleaned = {key:int(value) for key, value in ballot.items() if value.isdigit()}
 
+    # Sort candidates
     ballot_sorted = sorted(ballot_cleaned.items(), key=lambda e: e[1])
 
-    print(ballot_sorted)
+    # Return just the candidates names in order
+    return [name for name, rank in ballot_sorted]
 
 
 def round_tally(votes):
@@ -106,13 +109,6 @@ def print_history(history):
         print(message)
 
 if __name__ == "__main__":
-    print_history(election([
-        [2,1],
-        [1,2],
-        [3],
-        [2,3],
-        [1,2]])[1])
-
     with open("vote_results.csv", 'r') as f:
         reader = csvreader(f)
 
@@ -122,5 +118,11 @@ if __name__ == "__main__":
         candidate_names = [name.strip('[]') for name in colume_titles if len(name) and name[0] == '[' and name[-1] == ']']
         print(candidate_names)
 
-        for column in colume_seperator([f'[{e}]' for e in candidate_names], colume_titles, reader):
-            print(column)
+        ballots = []
+        for column in colume_seperator(candidate_names, [e.strip('[]') for e in colume_titles], reader):
+            vote = format_ballot(column)
+            if vote:
+                print(f"Vote: {vote}")
+                ballots.append(vote)
+
+        print_history(election(ballots)[1])
