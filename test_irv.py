@@ -3,41 +3,6 @@ import pytest
 import irv
 
 
-def test_is_valid_vote():
-
-    """
-    Valid format or does it need processing
-
-    Least important to most
-    """
-
-    is_valid = irv.is_valid_vote
-
-    # No preferences are left
-    assert is_valid([]) == False
-
-    # Next vote is not greater than zero
-    assert is_valid([0,2]) == False
-    assert is_valid([0]) == False
-    assert is_valid([4, 0]) == False
-    assert is_valid([2, 0, 4]) == False
-    assert is_valid([3, 5, 2]) == True
-
-    # All types must be numbers
-    assert is_valid([None,2]) == False
-    assert is_valid([None]) == False
-    assert is_valid([4, None]) == False
-    assert is_valid([2, None, 4]) == False
-    assert is_valid([3, 5, 2]) == True
-
-def test_process_votes():
-    process = irv.process_votes
-
-    # Remove zeros and none numbers
-    assert process([0, 4]) == [4]
-    assert process([5, None, 6]) == [5, 6]
-    assert process([4, 6, 2]) == [4, 6, 2]
-
 def test_round_tally():
     tally = irv.round_tally
 
