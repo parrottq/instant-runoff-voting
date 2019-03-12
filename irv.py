@@ -108,6 +108,44 @@ def print_history(history):
             message += ", "
         print(message)
 
+def generate_sankey(history):
+    winner, vote_history = history
+    output = ""
+
+    last_round = 0
+    for round_num, event in enumerate(zip(vote_history, vote_history[1:])):
+        last_round = round_num + 1
+        current_event, next_event = event
+
+        # Check for missing key
+        missing_candidate = None
+        for search_candidate in current_event:
+            if not (search_candidate in next_event):
+                missing_candidate = search_candidate
+                break
+
+        # Add transfered votes
+        for candidate, votes in next_event.items():
+            # Add Candiadate current votes
+            output += f"{candidate} ({round_num +1}) [{current_event[candidate]}] {candidate} ({round_num + 2})\n"
+
+            # Difference in votes between current and next round
+            votes_gained = votes - current_event[candidate]
+
+            # Did they actually get any
+            if votes_gained < 1:
+                continue
+
+            # If so note the difference
+            output += f"{missing_candidate} ({round_num + 1}) [{votes_gained}] {candidate} ({round_num + 2})\n"
+
+
+    # Winner
+    output += f"{winner} ({last_round + 1}) [{vote_history[-1][winner]}] {winner} ({last_round + 2})"
+
+    return output
+
+
 if __name__ == "__main__":
     with open("vote_results.csv", 'r') as f:
         reader = csvreader(f)
@@ -125,4 +163,12 @@ if __name__ == "__main__":
                 print(f"Vote: {vote}")
                 ballots.append(vote)
 
-        print_history(election(ballots)[1])
+        history = election(ballots)
+
+        print_history(history[1])
+
+        print()
+        print("'Sankey Graph")
+        print("'sankeymatic.com/build")
+        print(generate_sankey(history))
+        print()

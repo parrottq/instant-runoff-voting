@@ -123,3 +123,24 @@ def test_format_ballot():
     assert fballot({"a": "", "b": "2", "c": "3"}) == ["b", "c"]
     assert fballot({"a": "letters"}) == []
     assert fballot({"a": "2", "b": "", "c": "4"}) == ["a", "c"]
+
+def test_generate_sanket():
+    san = irv.generate_sankey
+
+    assert sorted(san(["a", [
+        {"a": 4, "b": 3, "c": 2},
+        {"a": 5, "b": 4}]]
+        ).split('\n')) == sorted("a (1) [4] a (2)\nb (1) [3] b (2)\nc (1) [1] a (2)\nc (1) [1] b (2)\na (2) [5] a (3)".split('\n'))
+
+    assert sorted(san(["a", [
+        {"a": 4, "b": 3, "c": 2},
+        {"a": 5, "b": 3}]]
+        ).split('\n')) == sorted("a (1) [4] a (2)\nb (1) [3] b (2)\nc (1) [1] a (2)\na (2) [5] a (3)".split('\n'))
+
+    assert sorted(san(["a", [
+        {"a": 4, "b": 3, "c": 2, "d": 3},
+        {"a": 5, "b": 4, "d": 3},
+        {"a": 7, "b": 5}]]
+        ).split('\n')) == sorted(
+                """a (1) [4] a (2)\nb (1) [3] b (2)\nc (1) [1] a (2)\nc (1) [1] b (2)\nd (1) [3] d (2)
+a (2) [5] a (3)\nb (2) [4] b (3)\nd (2) [2] a (3)\nd (2) [1] b (3)\na (3) [7] a (4)""".split('\n'))
