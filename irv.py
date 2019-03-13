@@ -89,6 +89,9 @@ def election(votes):
 
         candidate = majority_present(results, total_votes)
         if candidate:
+            if len(results) > 1:
+                history.append({candidate: results[candidate]})
+
             return (candidate, history)
 
         last_place = lowest_candidate(results)
@@ -139,11 +142,7 @@ def generate_sankey(history):
             # If so note the difference
             output += f"{missing_candidate} ({round_num + 1}) [{votes_gained}] {candidate} ({round_num + 2})\n"
 
-
-    # Winner
-    output += f"{winner} ({last_round + 1}) [{vote_history[-1][winner]}] {winner} ({last_round + 2})"
-
-    return output
+    return output.strip('\n')
 
 
 if __name__ == "__main__":
