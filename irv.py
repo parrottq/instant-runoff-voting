@@ -101,6 +101,9 @@ def election(votes):
             # eliminated
             stripped_votes = []
             for vote in votes:
+                if not vote:
+                    continue
+
                 stripped_votes.append([vote[0], *[e for e in vote if e == majority_leader]])
             votes = stripped_votes
 
@@ -124,7 +127,7 @@ def election(votes):
                 votes = remove_candidate(candidate, votes)
                 break
 
-            # Skip the other elimination code below
+            # Skip the regular elimination code below
             continue
 
         # Determine who is eliminated if no majority
