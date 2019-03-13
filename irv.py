@@ -42,7 +42,7 @@ def round_tally(votes):
 
             total_votes += 1
 
-    return (results, total_votes)
+    return results
 
 
 def majority_present(results, total_votes):
@@ -70,33 +70,73 @@ def lowest_candidate(results):
 
     return last_places
 
+
 def remove_candidate(candidate, votes):
     return [[inner for inner in outer if inner != candidate] for outer in votes]
 
 
 def election(votes):
-    # TODO: precompute total voters
     history = []
+    total_votes = len([e for e in votes if e])
+    majority_leader = None
 
     while True:
-        results, total_votes = round_tally(votes)
+        results = round_tally(votes)
 
         # Detect unlimited looping
         if len(history) and history[-1] == results:
-            raise Exception("Looping too much, something went wrong")
+            raise Exception("Rounds are not changing")
 
-        history.append(results)
+        history.append(results.copy())
 
+        # The election is over if a candidate gets a majority
         candidate = majority_present(results, total_votes)
-        if candidate:
-            if len(results) > 1:
-                history.append({candidate: results[candidate]})
+        if candidate and not majority_leader:
+            # This will enable a special history recorder to see if
+            # the majority leader would have gotten any votes if the
+            # election continued
+            majority_leader = candidate
 
-            return (candidate, history)
+            # Remove all votes for other candidates as they are all
+            # eliminated
+            stripped_votes = []
+            for vote in votes:
+                stripped_votes.append([vote[0], *[e for e in vote if e == majority_leader]])
+            votes = stripped_votes
 
+        # Only one candidate is left, finish
+        # Note: Only one candidate can be eliminated
+        #   in each history entry. This is so we know
+        #   where votes come from in print_history
+        #   and print_sankey
+        if len(results) == 1:
+            return (list(results)[0], history)
+
+        # If there is a majority this will record
+        # individual candidates being removed
+        if majority_leader:
+            # This picks the first candidate that is
+            # not a majority and removes them so it
+            # can be recoreded
+            for candidate in results:
+                if candidate == majority_leader:
+                    continue
+                votes = remove_candidate(candidate, votes)
+                break
+
+            # Skip the other elimination code below
+            continue
+
+        # Determine who is eliminated if no majority
         last_place = lowest_candidate(results)
-        votes = remove_candidate(last_place[0], votes)
-        # TODO : Handle last place less randomly
+        if len(last_place) == 1:
+            votes = remove_candidate(last_place[0], votes)
+        else:
+            # This indicates that single last place could
+            # be found, most likely because of a draw
+            # We stop the election so user can resolve it
+            return (None, history)
+
 
 def print_history(history):
     for num, event in enumerate(history):
@@ -110,6 +150,7 @@ def print_history(history):
                 message += f"({sign}{point_change})"
             message += ", "
         print(message)
+
 
 def generate_sankey(history):
     winner, vote_history = history

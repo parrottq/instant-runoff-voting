@@ -6,12 +6,12 @@ import irv
 def test_round_tally():
     tally = irv.round_tally
 
-    assert tally([[2]] * 4 + [[5]] * 2) == ({2: 4, 5: 2}, 6)
-    assert tally([[2, 4, 6]] * 1 + [[6, 4, 5]]* 2) == ({2: 1, 6: 2, 4: 0, 5: 0}, 3)
-    assert tally([[1]]) == ({1: 1}, 1)
+    assert tally([[2]] * 4 + [[5]] * 2) == {2: 4, 5: 2}
+    assert tally([[2, 4, 6]] * 1 + [[6, 4, 5]]* 2) == {2: 1, 6: 2, 4: 0, 5: 0}
+    assert tally([[1]]) == {1: 1}
 
     # Votes that are not in any first choise
-    assert tally([[1, 2], [3, 1, 2], [3, 2]]) == ({1:1, 2: 0, 3: 2}, 3)
+    assert tally([[1, 2], [3, 1, 2], [3, 2]]) == {1:1, 2: 0, 3: 2}
 
 def test_lowest_candidate():
     lowest = irv.lowest_candidate
@@ -56,7 +56,7 @@ def test_election():
         [2],
         [1],
         [1]
-        ]) == (2, [{1: 2, 2: 3, 3: 1}, {1: 3, 2: 3}, {2: 3}])
+        ]) == (None, [{1: 2, 2: 3, 3: 1}, {1: 3, 2: 3}])
 
     assert election([
         [1],
@@ -66,7 +66,17 @@ def test_election():
         [2],
         [3],
         [4]
-        ]) == (1, [{1: 4, 2: 1, 3: 1, 4: 1}, {1: 4}])
+        ]) == (1, [{1: 4, 2: 1, 3: 1, 4: 1}, {1: 4, 3: 1, 4: 1}, {1: 4, 4:1}, {1: 4}])
+
+    assert election([
+        [1],
+        [1],
+        [1],
+        [1],
+        [2, 1],
+        [3, 4],
+        [4, 2, 1]
+        ]) == (1, [{1: 4, 2: 1, 3: 1, 4: 1}, {1: 5, 3: 1, 4: 1}, {1: 5, 4: 1}, {1: 6}])
 
 def test_colume_sperator():
     sep = irv.colume_seperator
